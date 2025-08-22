@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-import { Button, StyleSheet, Text, TextInput, View, Image } from 'react-native';
+import { Button, StyleSheet, Text, TextInput, View, Image, TouchableOpacity } from 'react-native';
 import { login } from '../config/login';
 import PopUp from "../components/PopUp";
 
@@ -12,15 +12,15 @@ export default function Login({ navigation }) {
     const [popUpData, setPopUpData] = useState({ isTrue: false, text: "Erro interno no servidor!" });
 
 
-    const headleLogin = async  () => {
+    const headleLogin = async () => {
         const result = await login(email, password);
 
         if (result.success) {
             setPopUpVisible(true)
-            setPopUpData({ isTrue: true, text: result.message})
+            setPopUpData({ isTrue: true, text: result.message })
 
             const timer = setTimeout(() => {
-                navigation.reset({ index: 0, routes: [{ name: "Home" , params: {userName: result.user }}], });
+                navigation.reset({ index: 0, routes: [{ name: "Home", params: { userName: result.user } }], });
             }, 3000)
         } else {
             setPopUpVisible(true)
@@ -30,19 +30,24 @@ export default function Login({ navigation }) {
 
     return <>
         <View style={style.main}>
-            <Image style={style.logo} source={require('../assets/favicon.png')}></Image>
-            <Text style={style.title}>Login</Text>
+            <View style={style.grid}>
+                <View style={style.hero}>
+                    <Image style={style.logo} source={require('../assets/favicon.png')}></Image>
+                </View>
+                <View style={style.form}>
+                    <Text style={style.title}>Login</Text>
 
-            <Text style={style.label}>Insira seu Email:</Text>
-            <TextInput style={style.input} onChangeText={setEmail} placeholder='Email...' />
+                    <TextInput style={style.input} onChangeText={setEmail} placeholder='   Login...' placeholderTextColor="#000" />
 
-            <Text style={style.label}>Insira sua Senha:</Text>
-            <TextInput style={style.input} onChangeText={setPassword} secureTextEntry placeholder='Senha...' />
+                    <TextInput style={style.input} onChangeText={setPassword} secureTextEntry placeholder='   Senha...' placeholderTextColor="#000" />
 
-            <View style={style.btn}>
-                <Button onPress={headleLogin} title={'Enviar'}></Button>
+                    <TouchableOpacity style={style.btn} onPress={headleLogin}>
+                        <Text style={style.btnText}>Enviar</Text>
+                    </TouchableOpacity>
+
+                </View>
+                <View style={style.down}></View>
             </View>
-
             <PopUp visible={popUpVisible} onClose={() => setPopUpVisible(false)} isTrue={popUpData.isTrue} text={popUpData.text} />
         </View>
     </>
@@ -50,38 +55,74 @@ export default function Login({ navigation }) {
 
 const style = StyleSheet.create({
     main: {
+        backgroundColor: '#0A1A40',
+        flex: 1,
+    },
+    grid: {
         display: 'flex',
         flexDirection: 'column',
-        justifyContent: 'center',
         flex: 1,
-        backgroundColor: '#000fff',
-        padding: 15,
-        borderRadius: 8,
+        justifyContent: 'space-between',
+    },
+    hero: {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: 250,
+        backgroundColor: 'white',
+        borderTopLeftRadius: 0,
+        borderTopRightRadius: 0,
+        borderBottomRightRadius: 220,
+        borderBottomLeftRadius: 0,
     },
     logo: {
-        width: 150,
-        height: 150,
-        alignSelf: "center",
+        height: 180,
+        width: 180,
+    },
+    form: {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        gap: 40
     },
     title: {
-        fontSize: 35,
-        fontWeight: 'bold',
-        color: '#fff',
+        color: 'white',
+        fontSize: 55
     },
     label: {
-        textAlign: 'left',
-        color: '#fff',
-        marginTop: 15
-
+        fontSize: 15,
+        color: 'white',
+        textAlign: 'left'
     },
     input: {
-        color: '#fff',
-        borderColor: "#ccc",
+        width: '80%',
+        height: '11.5%',
+        backgroundColor: 'white',
         borderWidth: 1,
-        borderRadius: 8,
-        padding: 10,
+        borderBlockColor: 'white',
+        borderRadius: 25,
     },
     btn: {
-        marginTop: 15
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: 'white',
+        width: '80%',
+        height: '10%',
+        borderWidth: 1,
+        borderBlockColor: 'white',
+        borderRadius: 25,
     },
+    btnText: {
+        fontSize: 20,
+        fontWeight: 'bold'
+    },
+    down: {
+        height: 80,
+        backgroundColor: 'white',
+        borderTopLeftRadius: 60,
+        borderTopRightRadius: 60,
+        borderBottomRightRadius: 0,
+        borderBottomLeftRadius: 0,
+    }
 });

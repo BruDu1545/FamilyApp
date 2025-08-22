@@ -16,7 +16,9 @@ import { addExpanses } from "../config/finance/addExpanses";
 
 
 export default function Finance({ navigation }) {
-    const [userId, setUserId] = useState<number>(0);
+    const { user, loading, error } = useUserId();
+    const userId = user?.id ?? 0;
+
     const [pessoal, setPessoal] = useState<number>(0);
     const [total, setTotal] = useState<number>(0);
     let miniTotal = 0;
@@ -26,16 +28,12 @@ export default function Finance({ navigation }) {
 
     const [newValue, setNewValue] = useState<String>('');
 
-    const { user, loading, error } = useUserId();
-    setUserId(user.id)
-
     const getMyFinace = async () => {
         const resp = await getMoney(userId)
         if (resp.success) {
             setPessoal(resp.data[0].value)
         }
     }
-    getMyFinace()
 
     const getAllFinance = useCallback(async () => {
         const resp = await getMoney(null);
@@ -47,11 +45,9 @@ export default function Finance({ navigation }) {
         }
     }, []);
 
-    getMyFinace()
-    getAllFinance()
 
     const handlePutValue = () => {
-        if (Number(newValue) || newValue === 0) {
+        if (Number(newValue)) {
             setMoney(userId, newValue)
             getMyFinace()
             getAllFinance()
@@ -79,7 +75,12 @@ export default function Finance({ navigation }) {
             setTimeout(() => setPopUpVisible(false), 3000);
         }
     }
-    reloadItens()
+
+    useEffect(() => {
+        getMyFinace();
+        getAllFinance();
+        reloadItens();
+    }, [loading, userId]);
 
     const handleDelete = async (id: number) => {
         const results = await delExpanses(id)
@@ -97,6 +98,8 @@ export default function Finance({ navigation }) {
         const result = await addExpanses(newExpanses, newExpansesValue, userId)
         if (result.success) {
             reloadItens()
+            setNewExpanses('')
+            setNewExpansesValue('')
         } else {
             console.log(result.message)
         }
@@ -124,8 +127,8 @@ export default function Finance({ navigation }) {
                 />
             </View>
             <View style={style.grid}>
-                <TextInput style={style.input} onChangeText={setNewExpanses} placeholder='Digite aqui...' placeholderTextColor="#aaa" />
-                <TextInput style={style.input} onChangeText={setNewExpansesValue} placeholder='Digite aqui...' placeholderTextColor="#aaa" />
+                <TextInput style={style.input} onChangeText={setNewExpanses} value={newExpanses} placeholder='Descrição...' placeholderTextColor="#aaa" />
+                <TextInput style={style.input} onChangeText={setNewExpansesValue} value={newExpansesValue}  placeholder='Valor...' placeholderTextColor="#aaa" />
                 <View style={style.btn}>
                     <Button title={'Enviar'} onPress={() => headleAddExpanses()}></Button>
                 </View>

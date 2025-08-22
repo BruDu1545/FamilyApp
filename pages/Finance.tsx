@@ -6,12 +6,13 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import PopUp from "../components/PopUp";
 
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useUserId } from "../config/lib/getUser";
 
 import { getMoney } from "../config/finance/getMoney";
 import { setMoney } from "../config/finance/setMoney";
 import { getExpenses } from "../config/finance/getExpenses";
 import { delExpanses } from "../config/finance/delExpanses";
+import { addExpanses } from "../config/finance/addExpanses";
 
 
 export default function Finance({ navigation }) {
@@ -23,26 +24,10 @@ export default function Finance({ navigation }) {
     const [popUpVisible, setPopUpVisible] = useState(false);
     const [popUpData, setPopUpData] = useState({ isTrue: false, text: "Erro interno no servidor!" });
 
-    const [newValue, setNewValue] = useState<number>(0);
+    const [newValue, setNewValue] = useState<String>('');
 
-    useEffect(() => {
-        const loadUser = async () => {
-            try {
-                const jsonValue = await AsyncStorage.getItem("@user");
-                if (jsonValue) {
-                    const user = JSON.parse(jsonValue);
-                    setUserId(user.id);
-                } else {
-                    setUserId(0);
-                }
-            } catch (error) {
-                console.error("Erro ao ler usuário", error);
-                setUserId(0);
-            }
-        };
-
-        loadUser();
-    }, []);
+    const { user, loading, error } = useUserId();
+    setUserId(user.id)
 
     const getMyFinace = async () => {
         const resp = await getMoney(userId)
@@ -105,6 +90,17 @@ export default function Finance({ navigation }) {
         }
     }
 
+    const [newExpanses, setNewExpanses] = useState<String>('');
+    const [newExpansesValue, setNewExpansesValue] = useState<String>('');
+
+    const headleAddExpanses = async () => {
+        const result = await addExpanses(newExpanses, newExpansesValue, userId)
+        if (result.success) {
+            reloadItens()
+        } else {
+            console.log(result.message)
+        }
+    }
 
     return <>
         <Header title="Finance" navigation={navigation} />
@@ -128,9 +124,10 @@ export default function Finance({ navigation }) {
                 />
             </View>
             <View style={style.grid}>
-                <TextInput style={style.input} placeholder='Digite aqui...' placeholderTextColor="#aaa" />
+                <TextInput style={style.input} onChangeText={setNewExpanses} placeholder='Digite aqui...' placeholderTextColor="#aaa" />
+                <TextInput style={style.input} onChangeText={setNewExpansesValue} placeholder='Digite aqui...' placeholderTextColor="#aaa" />
                 <View style={style.btn}>
-                    <Button title={'Enviar'}></Button>
+                    <Button title={'Enviar'} onPress={() => headleAddExpanses()}></Button>
                 </View>
             </View>
         </View>

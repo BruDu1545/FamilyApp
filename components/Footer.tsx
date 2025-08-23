@@ -12,15 +12,15 @@ export default function Footer({ select, navigation }) {
 
         <View style={style.footer}>
             <TouchableOpacity onPress={() => navigation.navigate("Finance")}>
-                <MaterialIcons name="attach-money" size={30} color={select === "Finance" ? "#fff000" : "white"} />
+                <MaterialIcons name="attach-money" size={30} color={select === "Finance" ? "#ffbb00ff" : "#1c1c1c"} />
             </TouchableOpacity>
 
             <TouchableOpacity onPress={() => navigation.navigate("Works")}>
-                <MaterialIcons name="work" size={30} color={select === "Works" ? "#fff000" : "white"} />
+                <MaterialIcons name="work" size={30} color={select === "Works" ? "#ffbb00ff" : "#1c1c1c"} />
             </TouchableOpacity>
 
             <TouchableOpacity onPress={() => navigation.navigate("Shopping")}>
-                <Fontisto name="shopping-basket" size={30} color={select === "Shopping" ? "#fff000" : "white"} />
+                <Fontisto name="shopping-basket" size={30} color={select === "Shopping" ? "#ffbb00ff" : "#1c1c1c"} />
             </TouchableOpacity>
         </View>
     </>
@@ -32,9 +32,10 @@ const style = StyleSheet.create({
         justifyContent: "space-around",
         alignItems: "center",
         paddingVertical: 12,
-        backgroundColor: "#1c1c1c",
+        backgroundColor: "white",
         position: "absolute",
         bottom: 0,
+        paddingBottom: 35,
         left: 0,
         right: 0,
     },

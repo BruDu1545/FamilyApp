@@ -20,7 +20,7 @@ export default function App() {
         <Stack.Navigator 
         screenOptions={{
           headerShown: false,
-           contentStyle: { backgroundColor: "#1c1c1c" },
+           contentStyle: { backgroundColor: "#0A1A40" },
            }} 
            initialRouteName="Login">
           <Stack.Screen name="Login" component={Login} />
@@ -37,7 +37,7 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1c1c1c',
+    backgroundColor: '#0A1A40',
     alignItems: 'center',
     margin: 'auto'
   },

@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { Button, StyleSheet, Text, TextInput, View, Image, TouchableOpacity } from 'react-native';
 import { login } from '../config/login';
 import PopUp from "../components/PopUp";
+import { getLoggedUser } from '../config/auth';
 
 export default function Login({ navigation }) {
 
@@ -27,6 +28,17 @@ export default function Login({ navigation }) {
             setPopUpData({ isTrue: false, text: result.message });
         }
     }
+
+    useEffect(() => {
+        const checkUser = async () => {
+            const user = await getLoggedUser();
+            if (user) {
+                navigation.replace("Home");
+            }
+        };
+        checkUser();
+    }, []);
+
 
     return <>
         <View style={style.main}>

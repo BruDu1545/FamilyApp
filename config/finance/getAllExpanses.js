@@ -1,11 +1,7 @@
 import { supabase } from "../lib/supabase";
 
-export async function getExpenses(id, mode) {
-  let query = supabase.from("expenses").select("*");
-
-  if (!mode) {
-    query = query.eq("created_by", id);
-  }
+export async function getAllExpenses() {
+  let query = supabase.from("expenses").select("value");
 
   const { data, error } = await query;
 

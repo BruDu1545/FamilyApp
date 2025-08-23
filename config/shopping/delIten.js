@@ -7,5 +7,5 @@ export async function delItens(id) {
     return { success: false, message: error?.message || "Erro ao deletar" };
   }
 
-  return { success: true, message: "ok!", data };
+  return { success: true, message: "ok" };
 }

@@ -7,12 +7,19 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import Fontisto from '@expo/vector-icons/Fontisto';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Entypo } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export default function Hamburguer({ visible, onClose, navigation, select, name}) {
-
+export default function Hamburguer({ visible, onClose, navigation, select, name }) {
+    const handleLogout = async () => {
+        await AsyncStorage.removeItem("@user");
+        navigation.reset({
+            index: 0,
+            routes: [{ name: "Login" }],
+        });
+    };
     return (
         <Modal visible={visible} transparent={true} animationType="fade">
-            <View style={styles.overlay}>
+            <TouchableOpacity style={styles.overlay} onPress={onClose}>
                 <View style={styles.hamburguer}>
                     <TouchableOpacity style={styles.btn} onPress={onClose}>
                         <Text style={styles.btnText}>Fechar                                               X</Text>
@@ -37,6 +44,12 @@ export default function Hamburguer({ visible, onClose, navigation, select, name}
                                 <Text style={[styles.navTitle, select === 'Finance' ? { color: 'white' } : []]}>Finanças</Text>
                             </View>
                         </TouchableOpacity>
+                        <TouchableOpacity onPress={() => navigation.navigate("Works")}>
+                            <View style={[styles.navIten, select === 'Works' ? { backgroundColor: '#0A1A40' } : []]}>
+                                <MaterialIcons name="work" size={30} color={select === 'Works' ? 'white' : 'black'} />
+                                <Text style={[styles.navTitle, select === 'Works' ? { color: 'white' } : []]}>Tarefas</Text>
+                            </View>
+                        </TouchableOpacity>
                         <TouchableOpacity onPress={() => navigation.navigate("Home")}>
                             <View style={[styles.navIten, select === 'Home' ? { backgroundColor: '#0A1A40' } : []]}>
                                 <Entypo name="home" size={30} color={select === 'Home' ? 'white' : 'black'} />
@@ -49,15 +62,15 @@ export default function Hamburguer({ visible, onClose, navigation, select, name}
                                 <Text style={[styles.navTitle, select === 'Shopping' ? { color: 'white' } : []]}>Shopping</Text>
                             </View>
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={() => navigation.navigate("Finance")}>
-                            <View style={[styles.navIten, select === 'Finance' ? { backgroundColor: '#0A1A40' } : []]}>
-                                <Ionicons name="exit" size={24} color={select === 'Finance' ? 'white' : 'black'} />
-                                <Text style={[styles.navTitle, select === 'Finance' ? { color: 'white' } : []]}>Sair</Text>
+                        <TouchableOpacity onPress={() => handleLogout()}>
+                            <View style={[styles.navIten, select === 'Login' ? { backgroundColor: '#0A1A40' } : []]}>
+                                <Ionicons name="exit" size={24} color={select === 'Login' ? 'white' : 'black'} />
+                                <Text style={[styles.navTitle, select === 'Login' ? { color: 'white' } : []]}>Sair</Text>
                             </View>
                         </TouchableOpacity>
                     </View>
                 </View>
-            </View>
+            </TouchableOpacity>
         </Modal>
     );
 }

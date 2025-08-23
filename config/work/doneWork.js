@@ -1,14 +1,27 @@
 import { supabase } from "../lib/supabase";
 
 export async function doneWork(id) {
-  const { error } = await supabase.from("works")
-    .update({ status: 1 })  
-    .eq("id", id)              
-    .select();
+  const { data, error } = await supabase
+    .from("works")
+    .select("status")
+    .eq("id", id)
+    .single();
 
-  if (error) {
-    return { success: false, message: error?.message || "Erro ao atualizar" };
+  if (error || !data) {
+    return { success: false, message: error?.message || "Erro ao buscar o registro" };
   }
 
-  return { success: true, message: "ok!", data };
+  const newValue = data.status === 1 ? 0 : 1;
+
+  const { data: updated, error: updateError } = await supabase
+    .from("works")
+    .update({ status: newValue })
+    .eq("id", id)
+    .select();
+
+  if (updateError) {
+    return { success: false, message: updateError.message || "Erro ao atualizar" };
+  }
+
+  return { success: true, message: "Status atualizado!", up: updated };
 }

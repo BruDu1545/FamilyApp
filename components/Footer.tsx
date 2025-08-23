@@ -7,20 +7,24 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import Fontisto from '@expo/vector-icons/Fontisto';
 
 export default function Footer({ select, navigation }) {
-    
+
     return <>
 
         <View style={style.footer}>
-            <TouchableOpacity onPress={() => navigation.navigate("Finance")}>
+            <TouchableOpacity style={style.center} onPress={() => navigation.navigate("Finance")}>
                 <MaterialIcons name="attach-money" size={30} color={select === "Finance" ? "#ffbb00ff" : "#1c1c1c"} />
+                <Text style={[style.span, {color: select === "Finance" ? "#ffbb00ff" : "#1c1c1c"}]}>Finanças</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={() => navigation.navigate("Works")}>
+            <TouchableOpacity style={style.center} onPress={() => navigation.navigate("Works")}>
                 <MaterialIcons name="work" size={30} color={select === "Works" ? "#ffbb00ff" : "#1c1c1c"} />
+                <Text style={[style.span, {color: select === "Works" ? "#ffbb00ff" : "#1c1c1c"}]}>Tarefas</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={() => navigation.navigate("Shopping")}>
+            <TouchableOpacity style={style.center} onPress={() => navigation.navigate("Shopping")}>
                 <Fontisto name="shopping-basket" size={30} color={select === "Shopping" ? "#ffbb00ff" : "#1c1c1c"} />
+                <Text style={[style.span, {color: select === "Shopping" ? "#ffbb00ff" : "#1c1c1c"}]}>Compras</Text>
+
             </TouchableOpacity>
         </View>
     </>
@@ -39,4 +43,13 @@ const style = StyleSheet.create({
         left: 0,
         right: 0,
     },
+    center: {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    span: {
+        
+    }
 })

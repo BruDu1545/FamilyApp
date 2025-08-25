@@ -9,8 +9,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { FontAwesome } from '@expo/vector-icons';
-import { getLoggedUser } from '../config/auth';
-
 
 export default function Home({ navigation }) {
 

@@ -22,9 +22,10 @@ export default function Shopping({ navigation }) {
     const [popUpVisible, setPopUpVisible] = useState(false);
     const [popUpData, setPopUpData] = useState({ isTrue: false, text: "Erro interno no servidor!" });
     const [addMenu, SetAddMenu] = useState(false);
+    const [typeMenu, setTypeMenu] = useState(1);
 
-    async function reloadItens(type = 0, userId?: string) {
-        const itens = await getItens(type, userId);
+    async function reloadItens(type) {
+        const itens = await getItens(type);
         if (itens?.success) {
             const rows = itens.data as any[];
             setList(
@@ -43,47 +44,48 @@ export default function Shopping({ navigation }) {
 
     const addIten = async () => {
         if (newItem) {
-            const result = await addItens(newItem.trim())
+            const result = await addItens(newItem.trim(), typeMenu)
             if (result?.success) {
                 const itens = await getItens();
                 const rows = itens.data as any[];
-                setList(
-                    rows.map((r) => ({
-                        id: r.id,
-                        check: r.check,
-                        name: (r.name ?? r.item ?? "").trim(),
-                    }))
-                );
+                if (rows.length > 0) {
+                    setList(
+                        rows.map((r) => ({
+                            id: r.id,
+                            check: r.check,
+                            name: (r.name ?? r.item ?? "").trim(),
+                        }))
+                    );
+                }
                 setNewIten('');
                 closeAddMenu()
             } else {
                 setPopUpVisible(true)
-                setPopUpData({ isTrue: true, text: result.message })
+                setPopUpData({ isTrue: false, text: result.message })
                 const timer = setTimeout(() => {
                     setPopUpVisible(false)
                 }, 3000)
             }
         }
     }
+
     const handleDelete = async (id: number) => {
         const results = await delItens(id)
         if (results?.success) {
-            reloadItens()
+            reloadItens(typeMenu)
         } else {
             console.log(results.message)
         }
     }
 
-    const openFamily = () => {
-        reloadItens()
+    const openFamily = async () => {
+        setTypeMenu(1)
+        await reloadItens(1)
     }
 
     const openPessoal = async () => {
-        const jsonValue = await AsyncStorage.getItem("@user");
-        const user = jsonValue ? JSON.parse(jsonValue) : null;
-        const userId = user?.id;
-
-        reloadItens(1, userId);
+        setTypeMenu(0)
+        await reloadItens(0);
     };
 
     const heandleCheck = async (id: number) => {
@@ -95,17 +97,18 @@ export default function Shopping({ navigation }) {
                 setPopUpVisible(false)
             }, 3000)
         } else {
-            reloadItens()
+            reloadItens(typeMenu)
         }
     }
 
     useEffect(() => {
-        reloadItens()
+        reloadItens(1)
     }, []);
 
     const openAddMenu = () => {
         SetAddMenu(true)
     }
+
     const closeAddMenu = () => {
         SetAddMenu(false)
     }
@@ -115,13 +118,13 @@ export default function Shopping({ navigation }) {
         <View style={style.grid}>
             <Text style={style.title}>Lista de compras</Text>
             <View style={style.changeList}>
-                <TouchableOpacity style={style.btns} onPress={openFamily}>
+                <TouchableOpacity style={[style.btns, { backgroundColor: typeMenu === 1 ? '#ffbb00ff' : 'white' }]} onPress={openFamily}>
                     <FontAwesome name="users" size={24} color="green" />
                     <Text style={style.text}>
                         Familia
                     </Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={style.btns} onPress={openPessoal}>
+                <TouchableOpacity style={[style.btns, { backgroundColor: typeMenu === 0 ? '#ffbb00ff' : 'white' }]} onPress={openPessoal}>
                     <FontAwesome name="user" size={24} color="green" />
                     <Text style={style.text}>
                         Pessoal
@@ -148,11 +151,11 @@ export default function Shopping({ navigation }) {
             <TouchableOpacity style={style.btnFloating} onPress={() => openAddMenu()}>
                 <AntDesign name="plus" size={45} color="#0A1A40" />
             </TouchableOpacity>
-            <TouchableOpacity style={[style.overlay, {display: addMenu ? 'flex' : 'none'}]} onPress={() => closeAddMenu()}></TouchableOpacity>
-            <View style={[style.addMenu, {display: addMenu ? 'flex' : 'none'}]}>
+            <TouchableOpacity style={[style.overlay, { display: addMenu ? 'flex' : 'none' }]} onPress={() => closeAddMenu()}></TouchableOpacity>
+            <View style={[style.addMenu, { display: addMenu ? 'flex' : 'none' }]}>
                 <View style={style.hero}>
                     <Image source={require('../assets/cesta.png')} style={{ width: 150, height: 133 }}></Image>
-                </View> 
+                </View>
                 <Text style={[style.title, { color: "black" }]}>
                     Adicionar Itens
                 </Text>

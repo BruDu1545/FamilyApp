@@ -94,7 +94,6 @@ export default function Works({ navigation }) {
         SetAddMenu(false)
     }
 
-
     return <>
         <Header title="Works" navigation={navigation} />
         <Text style={style.title}>Trabalhos da casa</Text>

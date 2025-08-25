@@ -113,6 +113,7 @@ const style = StyleSheet.create({
         borderWidth: 1,
         borderBlockColor: 'white',
         borderRadius: 25,
+        color: 'black'
     },
     btn: {
         display: 'flex',

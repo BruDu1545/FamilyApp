@@ -212,7 +212,7 @@ export default function Finance({ navigation }) {
                         <Text style={[style.money, { color: 'red' }]}>R$ {despesasPessoal}</Text>
                     </View>
                     <View style={style.column}>
-                        <Text style={style.titleMoney}>Despesas</Text>
+                        <Text style={style.titleMoney}>Resto</Text>
                         <Text style={[style.money, { color: restoMy > 0 ? 'green' : 'red' }]}>R$ {restoMy}</Text>
                     </View>
                 </View>

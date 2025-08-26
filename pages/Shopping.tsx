@@ -232,7 +232,7 @@ const style = StyleSheet.create({
     },
     btnFloating: {
         position: 'absolute',
-        bottom: 5,
+        bottom: 15,
         right: 10,
         backgroundColor: 'white',
         display: 'flex',

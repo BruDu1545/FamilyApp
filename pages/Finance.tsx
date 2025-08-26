@@ -139,6 +139,9 @@ export default function Finance({ navigation }) {
         setTypeList(newMode);
         await getMyFinace();
         await getAllFinance();
+        await sumAllExpanses(true)
+        await sumAllExpanses()
+        setMode(!mode)
         await reloadItens(newMode === 'Familia' ? 1 : 0);
     };
 
@@ -151,12 +154,16 @@ export default function Finance({ navigation }) {
         SetAddMenu(false)
     }
 
-    const sumAllExpanses = async () => {
-        const rst = await getAllExpenses();
+    const sumAllExpanses = async (type = false) => {
+        const rst = await getAllExpenses(type);
 
         if (rst?.success) {
-            let soma = rst.data.reduce((acc, item) => acc + item.value, 0);
-            setDespesas(soma);
+            let soma = rst.data.reduce((acc, item) => acc + Number(item.value), 0);
+            if (!type) {
+                setDespesas(soma);
+            } else {
+                setDespesasPessoal(soma);
+            }
         } else {
             console.log("Erro ao buscar despesas:", rst.message);
             return 0;
@@ -164,23 +171,49 @@ export default function Finance({ navigation }) {
     };
 
     const [despesas, setDespesas] = useState<number>(0);
+    const [despesasPessoal, setDespesasPessoal] = useState<number>(0);
+    const [resto, setResto] = useState<number>(0);
+    const [restoMy, setRestoMy] = useState<number>(0);
+    const [mode, setMode] = useState<Boolean>(true);
+
+    useEffect(() => {
+        setResto(total - despesas);
+    }, [total, despesas]);
+
+    useEffect(() => {
+        setRestoMy(pessoal - despesasPessoal);
+    }, [pessoal, despesasPessoal]);
 
     return <>
         <Header title="Finance" navigation={navigation} />
         <View style={style.grid}>
             <View style={style.topBar}>
-                <View style={style.row}>
+                <View style={[style.row, { display: mode ? 'flex' : 'none' }]}>
                     <View style={style.column}>
                         <Text style={style.titleMoney}>Familia</Text>
                         <Text style={[style.money, { color: total > 0 ? 'green' : 'red' }]}>R$ {total}</Text>
                     </View>
+                    <View style={style.column}>
+                        <Text style={style.titleMoney}>Despesas</Text>
+                        <Text style={[style.money, { color: 'red' }]}>R$ {despesas}</Text>
+                    </View>
+                    <View style={style.column}>
+                        <Text style={style.titleMoney}>Resto</Text>
+                        <Text style={[style.money, { color: resto > 0 ? 'green' : 'red' }]}>R$ {resto}</Text>
+                    </View>
+                </View>
+                <View style={[style.row, { display: !mode ? 'flex' : 'none' }]}>
                     <View style={style.column}>
                         <Text style={style.titleMoney}>Pessoal</Text>
                         <Text style={[style.money, { color: pessoal > 0 ? 'green' : 'red' }]}>R$ {pessoal}</Text>
                     </View>
                     <View style={style.column}>
                         <Text style={style.titleMoney}>Despesas</Text>
-                        <Text style={[style.money, { color: 'red' }]}>R$ {despesas}</Text>
+                        <Text style={[style.money, { color: 'red' }]}>R$ {despesasPessoal}</Text>
+                    </View>
+                    <View style={style.column}>
+                        <Text style={style.titleMoney}>Despesas</Text>
+                        <Text style={[style.money, { color: restoMy > 0 ? 'green' : 'red' }]}>R$ {restoMy}</Text>
                     </View>
                 </View>
                 <View style={style.rowInput}>
@@ -205,7 +238,7 @@ export default function Finance({ navigation }) {
                     renderItem={({ item }) => (
                         <View style={style.rowF}>
                             <View style={style.row}>
-                                <Text style={style.descp}>{item.descp}</Text>
+                                <Text numberOfLines={1} ellipsizeMode="tail" style={style.descp}>{item.descp}</Text>
                                 <Text style={style.value}>R${item.value}</Text>
                             </View>
                             <TouchableOpacity style={style.trash} onPress={() => handleDelete(item.id)}>
@@ -393,7 +426,8 @@ const style = StyleSheet.create({
     },
     descp: {
         color: 'white',
-        fontSize: 15
+        fontSize: 15,
+        flexWrap: 'wrap'
     },
     value: {
         color: 'red',

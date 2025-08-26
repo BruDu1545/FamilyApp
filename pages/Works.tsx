@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button, FlatList, Text, Image, TextInput, View, StyleSheet, TouchableOpacity } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
 
 import Header from "../components/Header";
 import Footer from "../components/Footer";
@@ -9,6 +10,7 @@ import { getWork } from '../config/work/getWork';
 import PopUp from "../components/PopUp";
 import { delWork } from "../config/work/delWork";
 import { doneWork } from "../config/work/doneWork";
+import { getUsers } from "../config/work/getUsers";
 import { AntDesign, Ionicons } from "@expo/vector-icons";
 
 
@@ -25,7 +27,7 @@ export default function Works({ navigation }) {
 
     const addWorks = async () => {
         if (newWork) {
-            const result = await addWork(newWork.trim())
+            const result = await addWork(newWork.trim(), option)
             if (result?.success) {
                 const itens = await getWork();
                 const rows = itens.data as any[];
@@ -94,10 +96,24 @@ export default function Works({ navigation }) {
         SetAddMenu(false)
     }
 
+    const [option, setOption] = useState('')
+
+    const [allUsers, setAllUsers] = useState([]);
+
+    useEffect(() => {
+        async function fetchUsers() {
+            const result = await getUsers();
+            if (result?.success) {
+                setAllUsers(result.data);
+            }
+        }
+        fetchUsers();
+    }, []);
+
     return <>
         <Header title="Works" navigation={navigation} />
-        <Text style={style.title}>Trabalhos da casa</Text>
         <View style={style.grid}>
+            <Text style={style.title}>Trabalhos da casa</Text>
             <FlatList
                 data={list}
                 keyExtractor={(it) => String(it.id)}
@@ -129,6 +145,21 @@ export default function Works({ navigation }) {
                     Adicionar Itens
                 </Text>
                 <TextInput style={style.input} onChangeText={setNewWork} placeholder='Digite aqui...' value={newWork} placeholderTextColor="#aaa" />
+                <Picker
+                    selectedValue={option}
+                    style={style.input}
+                    onValueChange={(itemValue, itemIndex) => setOption(itemValue)}
+                >
+                    <Picker.Item label="--Familia--" value="0" />
+                    {allUsers.map((user, index) => (
+                        <Picker.Item
+                            key={index}
+                            label={user.name}
+                            value={user.id}
+                        />
+                    ))}
+                </Picker>
+
                 <TouchableOpacity style={style.btnEnviar} onPress={() => addWorks()}>
                     <Text style={[style.text, { color: "white" }]}>
                         Enviar
@@ -195,7 +226,7 @@ const style = StyleSheet.create({
     },
     btnFloating: {
         position: 'absolute',
-        bottom: 5,
+        bottom: 15,
         right: 10,
         backgroundColor: 'white',
         display: 'flex',
@@ -204,7 +235,7 @@ const style = StyleSheet.create({
         padding: 0,
         borderRadius: 585,
         width: '17%',
-        height: '10%',
+        height: '9.5%',
         borderWidth: 1,
         borderColor: '#0A1A40',
     },
@@ -215,7 +246,7 @@ const style = StyleSheet.create({
         borderRadius: 15,
         padding: 15,
         width: '85%',
-        height: '55%',
+        height: '62%',
         position: 'absolute',
         top: '8%',
         left: '8%'
